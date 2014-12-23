@@ -48,11 +48,11 @@
     (is-200 users-show :params {:user-id user-id})
     (is-200 users-lookup :params {:user-id user-id})
     (is-200 users-suggestions :params {:q "john smith"})
-    ;; AW - these seem down on 26/4/2013 - not sure whats up??
-    ;;(is-200 users-suggestions-slug :params {:slug "sports"})
-    ;;(is-200 users-suggestions-slug-members :params {:slug "sports"})
+    (is-200 users-suggestions-slug :params {:slug "sports"})
+    (is-200 users-suggestions-slug-members :params {:slug "sports"})
+    ;; The following test seems to be broken as of 12/23/14
     ;;(is-200 users-contributees :params {:user-id user-id})
-))
+    ))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 

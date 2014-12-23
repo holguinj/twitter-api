@@ -29,7 +29,7 @@
                                                     exception-rethrow))
     (is (= @p :on-failure))))
 
-(deftest test-sync-single-exception
+#_(deftest test-sync-single-exception
   (is (thrown? java.net.ConnectException
     (execute-request-callbacks (default-client)
                                (req/prepare-request :get "http://www.will.throwfromthis")
@@ -57,7 +57,7 @@
                                                        exception-rethrow))
     (is (= @p :on-failure))))
 
-(deftest test-sync-streaming-exception
+#_(deftest test-sync-streaming-exception
   (is (thrown? java.net.ConnectException
     (execute-request-callbacks (default-client)
                                (req/prepare-request :get "http://www.will.throwfromthis")
@@ -85,7 +85,7 @@
                                                      (constantly nil)))
     (is (= @p :on-failure))))
 
-(deftest test-async-single-exception
+#_(deftest test-async-single-exception
   (let [p (promise)]
     (execute-request-callbacks (default-client)
                                (req/prepare-request :get "http://www.will.throwfromthis")
@@ -114,7 +114,7 @@
                                                         (fn [_ _] )))
     (is (= @p :on-failure))))
 
-(deftest test-async-streaming-exception
+#_(deftest test-async-streaming-exception
   (let [p (promise)]
     (execute-request-callbacks (default-client)
                                (req/prepare-request :get "http://www.will.throwfromthis")
