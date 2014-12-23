@@ -80,7 +80,7 @@
         {:keys [status body]} (execute-request-callbacks client req (callbacks-sync-single-default))]
     (if (= (:code status) 200)
       {:bearer (:access_token body)}
-      (throw (Exception. (str "Failed to retrieve application-only token: " body))))))
+      (throw (Exception. (str "Failed to retrieve application-only due to an unknown error:" body))))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
