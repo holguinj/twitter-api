@@ -3,6 +3,7 @@
    [clojure.test]
    [twitter.test-utils.core]
    [twitter.test creds utils]
+   [twitter.oauth :refer [request-app-only-token]]
    [twitter.callbacks]
    [twitter.api.restful])
   (:import
@@ -145,3 +146,16 @@
   (with-saved-search search-id (is-200 saved-searches-show-id :params {:id search-id})))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(comment
+  (def app-key (get-in (make-test-creds) [:consumer :key]))
+
+  (def app-secret (get-in (make-test-creds) [:consumer :secret]))
+
+  (def app-only (request-app-only-token app-key app-secret))
+
+  (application-rate-limit-status :oauth-creds app-only)
+
+
+  )
+
