@@ -36,9 +36,10 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn oauth-header-string 
-  "creates the string for the oauth header's 'Authorization' value, url encoding each value"
+  "Creates the string for the oauth header's 'Authorization' value,
+  url encoding each value. If the signing-map is an application-only
+  token, returns the 'Bearer' value."
   [signing-map & {:keys [url-encode?] :or {url-encode? true}}]
-  (println "Signing map:" signing-map)
 
   (if-let [app-only-token (:bearer signing-map)]
     (str "Bearer " app-only-token)
@@ -50,46 +51,57 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defn make-oauth-creds
-  "creates an oauth object out of supplied params"
-  [app-key app-secret user-token user-token-secret]
-
-  (let [consumer (oa/make-consumer app-key
-                                   app-secret
-                                   "https://twitter.com/oauth/request_token"
-                                   "https://twitter.com/oauth/access_token"
-                                   "https://twitter.com/oauth/authorize"
-                                   :hmac-sha1)]
-        
-    (OauthCredentials. consumer user-token user-token-secret)))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(defn encode-app-only-key
+(defn- encode-app-only-key
+  "Given a consumer-key and consumer-secret, concatenates and Base64
+  encodes them so that they can be submitted to Twitter in exchange
+  for an application-only token."
   [consumer-key consumer-secret]
   ;; TODO: RFC 1738-encode keys for no reason
   (let [concat-keys (str consumer-key ":" consumer-secret)]
     (-> (.getBytes concat-keys)
       b64/encode
-      (String. "UTF-8"))
-;    (String. (b64/encode (.getBytes concat-keys)) "UTF-8")
-    ))
+      (String. "UTF-8"))))
 
-(defn prepare-post
+(defn- prepare-post
   [url headers body]
-  (req/prepare-request :post, url,
+  (req/prepare-request :post, url
                        :headers headers
                        :body body))
 
 (defn request-app-only-token
   [consumer-key consumer-secret]
-  (let [req (prepare-post "https://api.twitter.com/oauth2/token"
-                          {"Authorization" (str "Basic "
-                                                (encode-app-only-key consumer-key consumer-secret))
-                           "Content-Type" "application/x-www-form-urlencoded;charset=UTF-8"}
-                          "grant_type=client_credentials")
+  (let [auth-string (str "Basic " (encode-app-only-key consumer-key consumer-secret))
+        content-type "application/x-www-form-urlencoded;charset=UTF-8"
+        req (req/prepare-request :post, "https://api.twitter.com/oauth2/token"
+                                 :headers {"Authorization" auth-string
+                                           "Content-Type" content-type}
+                                 :body "grant_type=client_credentials")
         client (create-client :follow-redirects false :request-timeout -1)
         {:keys [status body]} (execute-request-callbacks client req (callbacks-sync-single-default))]
     (if (= (:code status) 200)
       {:bearer (:access_token body)}
-      (throw (Exception. "Failed to retrieve application-only token")))))
+      (throw (Exception. (str "Failed to retrieve application-only token: " body))))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defn make-oauth-creds
+  "Creates an oauth object out of supplied params. If only an app-key
+  and app-secret are supplied, this function will return an
+  application-only authentication token. If a user-key and
+  user-token-secret are also supplied, then it will return a fully
+  authenticated token."
+
+  ([app-key app-secret]
+
+   (request-app-only-token app-key app-secret))
+
+  ([app-key app-secret user-token user-token-secret]
+
+   (let [consumer (oa/make-consumer app-key
+                                    app-secret
+                                    "https://twitter.com/oauth/request_token"
+                                    "https://twitter.com/oauth/access_token"
+                                    "https://twitter.com/oauth/authorize"
+                                    :hmac-sha1)]
+     
+     (OauthCredentials. consumer user-token user-token-secret))))

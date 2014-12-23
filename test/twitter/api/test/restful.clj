@@ -157,5 +157,7 @@
   (application-rate-limit-status :oauth-creds app-only)
 
 
+  (application-rate-limit-status :oauth-creds (make-test-creds))
+  
   )
 
