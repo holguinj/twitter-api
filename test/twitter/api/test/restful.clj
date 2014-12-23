@@ -13,7 +13,10 @@
 
 (deftest test-account
   (is-200 account-verify-credentials)
+
   (is-200 application-rate-limit-status)
+  (is-200-with-app-only application-rate-limit-status)
+
   (is-200 account-settings))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -35,32 +38,46 @@
 (deftest test-statuses
   (let [status-id (get-current-status-id *user-screen-name*)]
     (is-200 statuses-show-id :params {:id status-id})
-    (is-200 statuses-retweets-id :params {:id status-id})))
+    (is-200-with-app-only statuses-show-id :params {:id status-id})
+
+    (is-200 statuses-retweets-id :params {:id status-id})
+    (is-200-with-app-only statuses-retweets-id :params {:id status-id})))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (deftest test-search
-  (is-200 search-tweets :params {:q "clojure"}))
+  (is-200 search-tweets :params {:q "clojure"})
+  (is-200-with-app-only search-tweets :params {:q "clojure"}))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (deftest test-user
   (let [user-id (get-user-id *user-screen-name*)]
     (is-200 users-show :params {:user-id user-id})
+    (is-200-with-app-only users-show :params {:user-id user-id})
+
     (is-200 users-lookup :params {:user-id user-id})
+    (is-200-with-app-only users-lookup :params {:user-id user-id})
+
     (is-200 users-suggestions :params {:q "john smith"})
-    (is-200 users-suggestions-slug :params {:slug "sports"})
+    (is-200-with-app-only users-suggestions :params {:q "john smith"})
+(is-200 users-suggestions-slug :params {:slug "sports"})
     (is-200 users-suggestions-slug-members :params {:slug "sports"})
     ;; The following test seems to be broken as of 12/23/14
-    ;;(is-200 users-contributees :params {:user-id user-id})
-    ))
+    ;;(is-200 users-contributees :params {:user-id user-id}))
+)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (deftest test-trends
   (is-200 trends-place :params {:id 1})
+  (is-200-with-app-only trends-place :params {:id 1})
+
   (is-200 trends-available)
-  (is-200 trends-closest :params {:lat 37.781157 :long -122.400612831116}))
+  (is-200-with-app-only trends-available)
+
+  (is-200 trends-closest :params {:lat 37.781157 :long -122.400612831116})
+  (is-200-with-app-only trends-closest :params {:lat 37.781157 :long -122.400612831116}))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -108,7 +125,10 @@
 
 (deftest test-friendship
   (is-200 friendships-show :params {:source-screen-name *user-screen-name* :target-screen-name "AdamJWynne"})
+  (is-200-with-app-only friendships-show :params {:source-screen-name *user-screen-name* :target-screen-name "AdamJWynne"})
+
   (is-200 friendships-lookup :params { :screen-name "peat,AdamJWynne" } )
+
   (is-200 friendships-incoming)
   (is-200 friendships-outgoing))
 
@@ -146,18 +166,4 @@
   (with-saved-search search-id (is-200 saved-searches-show-id :params {:id search-id})))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(comment
-  (def app-key (get-in (make-test-creds) [:consumer :key]))
-
-  (def app-secret (get-in (make-test-creds) [:consumer :secret]))
-
-  (def app-only (request-app-only-token app-key app-secret))
-
-  (application-rate-limit-status :oauth-creds app-only)
-
-
-  (application-rate-limit-status :oauth-creds (make-test-creds))
-  
-  )
 
