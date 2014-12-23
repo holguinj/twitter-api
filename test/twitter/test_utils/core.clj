@@ -23,12 +23,12 @@
 
   `(is (= (get-in (~fn-name :oauth-creds (make-test-creds) ~@args) [:status :code]) ~code)))
 
-(defmacro is-app-only-http-code
+(defmacro is-200-with-app-only
   "checks to see if the response to a request using application-only
   authentication is a specific HTTP return code"
-  [code fn-name & args]
+  [fn-name & args]
 
-  `(is (= (get-in (~fn-name :oauth-creds (make-app-only-test-creds) ~@args) [:status :code]) ~code)))
+  `(is (= (get-in (~fn-name :oauth-creds (make-app-only-test-creds) ~@args) [:status :code]) 200)))
 
 (defmacro is-200
   "checks to see if the response is HTTP 200"

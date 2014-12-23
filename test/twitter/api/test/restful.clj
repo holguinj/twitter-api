@@ -61,11 +61,12 @@
 
     (is-200 users-suggestions :params {:q "john smith"})
     (is-200-with-app-only users-suggestions :params {:q "john smith"})
-(is-200 users-suggestions-slug :params {:slug "sports"})
+
+    (is-200 users-suggestions-slug :params {:slug "sports"})
     (is-200 users-suggestions-slug-members :params {:slug "sports"})
     ;; The following test seems to be broken as of 12/23/14
-    ;;(is-200 users-contributees :params {:user-id user-id}))
-)
+    ;;(is-200 users-contributees :params {:user-id user-id})
+    ))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
