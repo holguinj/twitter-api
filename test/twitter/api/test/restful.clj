@@ -66,7 +66,7 @@
     (is-200 users-suggestions-slug-members :params {:slug "sports"})
     ;; The following test seems to be broken as of 12/23/14
     ;;(is-200 users-contributees :params {:user-id user-id})
-    ))
+))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -167,4 +167,3 @@
   (with-saved-search search-id (is-200 saved-searches-show-id :params {:id search-id})))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
