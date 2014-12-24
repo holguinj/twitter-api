@@ -57,7 +57,7 @@
   for an application-only token."
   [consumer-key consumer-secret]
   ;; TODO: RFC 1738-encode keys for no reason
-  (let [concat-keys (str consumer-key ":" consumer-secret)]
+  (let [concat-keys (str (oas/url-encode consumer-key) ":" (oas/url-encode consumer-secret))]
     (-> (.getBytes concat-keys)
       b64/encode
       (String. "UTF-8"))))
