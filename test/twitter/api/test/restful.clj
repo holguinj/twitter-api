@@ -15,7 +15,7 @@
   (is-200 account-verify-credentials)
 
   (is-200 application-rate-limit-status)
-  (is-200-with-app-only application-rate-limit-status)
+  (is-200 application-rate-limit-status :app-only)
 
   (is-200 account-settings))
 
@@ -38,29 +38,29 @@
 (deftest test-statuses
   (let [status-id (get-current-status-id *user-screen-name*)]
     (is-200 statuses-show-id :params {:id status-id})
-    (is-200-with-app-only statuses-show-id :params {:id status-id})
+    (is-200 statuses-show-id :params {:id status-id} :app-only)
 
     (is-200 statuses-retweets-id :params {:id status-id})
-    (is-200-with-app-only statuses-retweets-id :params {:id status-id})))
+    (is-200 statuses-retweets-id :params {:id status-id}) :app-only))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (deftest test-search
   (is-200 search-tweets :params {:q "clojure"})
-  (is-200-with-app-only search-tweets :params {:q "clojure"}))
+  (is-200 search-tweets :params {:q "clojure"} :app-only))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (deftest test-user
   (let [user-id (get-user-id *user-screen-name*)]
     (is-200 users-show :params {:user-id user-id})
-    (is-200-with-app-only users-show :params {:user-id user-id})
+    (is-200 users-show :params {:user-id user-id} :app-only)
 
     (is-200 users-lookup :params {:user-id user-id})
-    (is-200-with-app-only users-lookup :params {:user-id user-id})
+    (is-200 users-lookup :params {:user-id user-id} :app-only)
 
     (is-200 users-suggestions :params {:q "john smith"})
-    (is-200-with-app-only users-suggestions :params {:q "john smith"})
+    (is-200 users-suggestions :params {:q "john smith"} :app-only)
 
     (is-200 users-suggestions-slug :params {:slug "sports"})
     (is-200 users-suggestions-slug-members :params {:slug "sports"})
@@ -72,13 +72,13 @@
 
 (deftest test-trends
   (is-200 trends-place :params {:id 1})
-  (is-200-with-app-only trends-place :params {:id 1})
+  (is-200 trends-place :params {:id 1} :app-only)
 
   (is-200 trends-available)
-  (is-200-with-app-only trends-available)
+  (is-200 trends-available :app-only)
 
   (is-200 trends-closest :params {:lat 37.781157 :long -122.400612831116})
-  (is-200-with-app-only trends-closest :params {:lat 37.781157 :long -122.400612831116}))
+  (is-200 trends-closest :params {:lat 37.781157 :long -122.400612831116} :app-only))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -126,7 +126,7 @@
 
 (deftest test-friendship
   (is-200 friendships-show :params {:source-screen-name *user-screen-name* :target-screen-name "AdamJWynne"})
-  (is-200-with-app-only friendships-show :params {:source-screen-name *user-screen-name* :target-screen-name "AdamJWynne"})
+  (is-200 friendships-show :params {:source-screen-name *user-screen-name* :target-screen-name "AdamJWynne"} :app-only)
 
   (is-200 friendships-lookup :params { :screen-name "peat,AdamJWynne" } )
 
